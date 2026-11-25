@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lunéa — Vernis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --shade: #d9568f; --bg: #f3a9c6; --ink: #1c1418; --cream: #f6f1ea; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: Inter, sans-serif; color: var(--ink); background: var(--cream); }
+  .serif { font-family: "Bodoni Moda", serif; }
+  button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+
+  header { position: fixed; inset: 0 0 auto; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: rgba(246,241,234,.35); backdrop-filter: blur(12px); }
+  .logo { letter-spacing: .35em; font-size: 15px; }
+  nav { display: flex; gap: 28px; font-size: 12px; }
+  nav a { color: inherit; text-decoration: none; opacity: .75; }
+  .bag { font-size: 12px; padding: 8px 14px; border-radius: 99px; background: rgba(255,255,255,.55); backdrop-filter: blur(8px); }
+
+  /* Hero: background follows the selected shade */
+  .hero { min-height: 100vh; background: radial-gradient(circle at 35% 45%, #fff6 0, transparent 55%), var(--bg); transition: background-color .7s; display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; padding: 100px 6vw 40px; gap: 4vw; overflow: hidden; }
+  .hero h1 { font-size: clamp(44px, 7vw, 104px); font-weight: 400; line-height: .95; }
+  .hero h1 em { color: var(--shade); transition: color .7s; }
+  .hero p { margin-top: 18px; max-width: 360px; font-size: 14px; line-height: 1.6; opacity: .75; }
+  .big-bottle { width: min(300px, 60vw); justify-self: center; filter: drop-shadow(0 40px 40px #0003); animation: float 6s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-14px) rotate(-2deg); } }
+  .big-bottle .liquid, .row .liquid, .card .liquid { transition: fill .7s; }
+
+  .tryon { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); width: 230px; padding: 18px; border-radius: 22px; background: rgba(255,255,255,.45); backdrop-filter: blur(14px); box-shadow: 0 20px 50px #0002; }
+  .tryon small { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; opacity: .6; }
+  .tryon h3 { font-size: 34px; font-weight: 400; margin: 4px 0 12px; }
+  .swatches { display: flex; gap: 6px; }
+  .swatches button { width: 26px; height: 40px; border-radius: 10px 10px 13px 13px; outline-offset: 2px; }
+  .swatches button[aria-pressed=true] { outline: 2px solid var(--ink); }
+  .add { margin-top: 14px; width: 100%; padding: 11px; border-radius: 99px; background: var(--shade); color: #fff; font-size: 12px; transition: background .7s; }
+
+  /* Shelf of bottles */
+  .row { background: var(--bg); transition: background-color .7s; display: flex; justify-content: space-around; padding: 10px 6vw 50px; flex-wrap: wrap; gap: 20px; }
+  .row button { text-align: center; font-size: 11px; transition: transform .3s; }
+  .row button:hover, .row button[aria-pressed=true] { transform: translateY(-10px); }
+  .row svg { width: 70px; display: block; margin: 0 auto 8px; filter: drop-shadow(0 14px 12px #0003); }
+  .row b { display: block; font-weight: 500; font-size: 12px; }
+
+  /* Collection */
+  .collection { padding: 90px 6vw; }
+  .eyebrow { font-size: 10px; letter-spacing: .25em; text-transform: uppercase; opacity: .6; }
+  .collection h2 { font-size: clamp(38px, 6vw, 80px); font-weight: 400; margin: 12px 0 50px; }
+  .collection h2 em { color: #c2185b; }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; }
+  .card { background: #fff8; border-radius: 999px 999px 90px 90px; padding: 14px 14px 26px; text-align: center; transition: transform .4s, box-shadow .4s; }
+  .card:hover { transform: translateY(-8px); box-shadow: 0 24px 40px #0001; }
+  .disc { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; }
+  .disc svg { width: 42%; filter: drop-shadow(0 10px 10px #0004); transition: transform .4s; }
+  .card:hover .disc svg { transform: rotate(-8deg) scale(1.06); }
+  .card .num { font-size: 9px; margin-top: 16px; opacity: .5; }
+  .card h4 { font-family: "Bodoni Moda", serif; font-weight: 400; letter-spacing: .2em; text-transform: uppercase; font-size: 13px; margin: 4px 0; }
+  .card .plus { margin-top: 12px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #0003; }
+
+  /* Cart drawer */
+  .drawer { position: fixed; inset: 0 0 0 auto; width: min(360px, 100%); background: var(--cream); z-index: 20; padding: 28px; transform: translateX(100%); visibility: hidden; transition: transform .4s, visibility .4s; box-shadow: -20px 0 50px #0002; display: flex; flex-direction: column; }
+  .drawer.open { transform: none; visibility: visible; }
+  .drawer ul { list-style: none; padding: 0; flex: 1; margin: 24px 0; overflow: auto; }
+  .drawer li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #0001; font-size: 14px; }
+  .drawer li i { width: 18px; height: 18px; border-radius: 50%; }
+  .drawer li span { flex: 1; }
+  .checkout { padding: 14px; border-radius: 99px; background: var(--ink); color: #fff; }
+
+  @media (max-width: 800px) {
+    nav { display: none; }
+    header { padding: 16px; }
+    .hero { grid-template-columns: 1fr; padding: 90px 16px 30px; text-align: center; }
+    .hero p { margin-inline: auto; }
+    .tryon { position: static; transform: none; margin: 0 auto; }
+    .collection { padding: 60px 16px; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  }
+  @media (min-width: 801px) and (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo serif">LUNÉA</div>
+  <nav><a href="#teintes">Teintes</a><a href="#collection">Collection</a><a href="#">À propos</a></nav>
+  <button class="bag" id="bagBtn">Panier (<span id="count">0</span>)</button>
+</header>
+
+<section class="hero" id="teintes">
+  <div>
+    <h1 class="serif">La couleur,<br><em>sublimée.</em></h1>
+    <p>Une formule ultra-brillante, six teintes pensées pour durer dix jours. Choisissez la vôtre.</p>
+  </div>
+  <div class="big-bottle" id="bigBottle"></div>
+  <aside class="tryon">
+    <small>Essayez-la</small>
+    <h3 class="serif" id="shadeName"></h3>
+    <div class="swatches" id="swatches"></div>
+    <button class="add" id="addHero">Ajouter au panier — 28 €</button>
+  </aside>
+</section>
+
+<div class="row" id="row"></div>
+
+<section class="collection" id="collection">
+  <div class="eyebrow">— La collection</div>
+  <h2 class="serif">Six teintes. <em>une finition.</em></h2>
+  <div class="grid" id="grid"></div>
+</section>
+
+<aside class="drawer" id="drawer" aria-label="Panier">
+  <div style="display:flex;justify-content:space-between"><h3 class="serif">Panier</h3><button id="close" aria-label="Fermer">✕</button></div>
+  <ul id="items"></ul>
+  <p style="display:flex;justify-content:space-between;margin-bottom:16px"><span>Total</span><b id="total">0 €</b></p>
+  <button class="checkout">Commander</button>
+</aside>
+
+<script>
+const shades = [
+  { name: "Nacre",   color: "#f2d4c8", bg: "#f4dcd3", disc: "#f0a160" },
+  { name: "Pivoine", color: "#d9568f", bg: "#f3a9c6", disc: "#d9628a" },
+  { name: "Corail",  color: "#f0442e", bg: "#f7a99a", disc: "#f05a3a" },
+  { name: "Prune",   color: "#7b2c5e", bg: "#c99ab8", disc: "#d8306f" },
+  { name: "Minuit",  color: "#2a1d4a", bg: "#a9a3c9", disc: "#7a3069" },
+  { name: "Onyx",    color: "#1b1418", bg: "#b7aeb3", disc: "#4a2a3a" },
+];
+const PRICE = 28;
+
+const bottle = c => `<svg viewBox="0 0 100 180" aria-hidden="true">
+  <rect x="34" y="0" width="32" height="62" rx="6" fill="#1c1418"/>
+  <rect x="38" y="4" width="5" height="52" rx="2" fill="#fff2"/>
+  <rect x="30" y="58" width="40" height="10" rx="2" fill="#2b2226"/>
+  <rect x="8" y="66" width="84" height="110" rx="16" fill="#ffffff55" stroke="#fff8"/>
+  <rect class="liquid" x="13" y="74" width="74" height="97" rx="12" fill="${c}"/>
+  <rect x="18" y="80" width="8" height="80" rx="4" fill="#fff5"/>
+</svg>`;
+
+let current = 1, cart = [];
+const $ = id => document.getElementById(id);
+const pressed = (list, i) => list.forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+
+$("swatches").innerHTML = shades.map(s => `<button style="background:${s.color}" aria-label="${s.name}"></button>`).join("");
+$("row").innerHTML = shades.map((s, i) => `<button>${bottle(s.color)}0${i + 1}<b>${s.name}</b>${PRICE} €</button>`).join("");
+$("grid").innerHTML = shades.map((s, i) => `<div class="card">
+  <div class="disc" style="background:radial-gradient(circle at 40% 35%, #fff4, transparent 60%), ${s.disc}">${bottle(s.color)}</div>
+  <div class="num">0${i + 1}</div><h4>${s.name}</h4><div>${PRICE} €</div>
+  <button class="plus" aria-label="Ajouter ${s.name}" data-i="${i}">+</button></div>`).join("");
+$("bigBottle").innerHTML = bottle(shades[current].color);
+
+function select(i) {
+  current = i;
+  const s = shades[i];
+  document.documentElement.style.setProperty("--shade", s.color);
+  document.documentElement.style.setProperty("--bg", s.bg);
+  $("bigBottle").querySelector(".liquid").setAttribute("fill", s.color);
+  $("shadeName").textContent = s.name;
+  pressed([...$("swatches").children], i);
+  pressed([...$("row").children], i);
+}
+
+function add(i) {
+  cart.push(i);
+  $("count").textContent = cart.length;
+  $("items").innerHTML = cart.map(j => `<li><i style="background:${shades[j].color}"></i><span>${shades[j].name}</span>${PRICE} €</li>`).join("");
+  $("total").textContent = cart.length * PRICE + " €";
+  $("drawer").classList.add("open");
+}
+
+[...$("swatches").children].forEach((b, i) => b.onclick = () => select(i));
+[...$("row").children].forEach((b, i) => b.onclick = () => { select(i); scrollTo({ top: 0, behavior: "smooth" }); });
+$("grid").onclick = e => e.target.dataset.i && add(+e.target.dataset.i);
+$("addHero").onclick = () => add(current);
+$("bagBtn").onclick = () => $("drawer").classList.add("open");
+$("close").onclick = () => $("drawer").classList.remove("open");
+select(current);
+</script>
+</body>
+</html>
